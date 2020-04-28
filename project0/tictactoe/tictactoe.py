@@ -23,12 +23,17 @@ def player(board):
     """
     Returns player who has the next turn on a board.
     """
-    X_count = board.count('X')
-    Y_count = board.count('Y')
-    if not(X_count + Y_count < 9):
-        return None
-    return 'X' if X_count < Y_count else 'O'
-
+    X_count = 0
+    O_count = 0
+    for i in range(3):
+        for j in range(3):
+            if board[i][j] == 'X':
+                X_count += 1
+            elif board[i][j] == 'O':
+                O_count += 1
+    if X_count <= O_count:
+        return 'X'
+    return 'O'
 
 def actions(board):
     """
@@ -46,10 +51,7 @@ def result(board, action):
     """
     Returns the board that results from making move (i, j) on the board.
     """
-    new_board = [[0]*3, [0]*3, [0]*3]
-    for i in range(3):
-        for j in range(3):
-            new_board[i][j] = board[i][j]
+    new_board = copy_board(board)
     new_board[action[0]][action[1]] = player(new_board)
     return new_board
 
@@ -67,12 +69,12 @@ def winner(board):
         return board[2][0]
 
     # Check horizontal
-    if board[0][0] == board[0][1] and board[0][1] == board[0][2] and board[0][0] != None:
+    if board[0][0] == board[1][0] and board[1][0] == board[2][0] and board[0][0] != None:
         return board[0][0] 
-    if board[1][0] == board[1][1] and board[1][1] == board[1][2] and board[1][0] != None:
-        return board[1][0]
-    if board[2][0] == board[2][1] and board[2][1] == board[2][2] and board[2][0] != None:
-        return board[2][0]
+    if board[0][1] == board[1][1] and board[1][1] == board[2][1] and board[0][1] != None:
+        return board[0][1]
+    if board[0][2] == board[1][2] and board[1][2] == board[2][2] and board[0][2] != None:
+        return board[0][2]
     
     # Check diagones
     if (board[0][0] == board[1][1] and board[1][1] == board[2][2]) or (board[0][2] == board[1][1] and board[1][1] == board[2][0]):
@@ -107,16 +109,29 @@ def utility(board):
     return 0
     
 
+def copy_board(board):
+    new_board = [[None]*3, [None]*3, [None]*3]
+    for i in range(3):
+        for j in range(3):
+            new_board[i][j] = board[i][j]
+    return new_board
+
 
 def minimax(board):
     """
     Returns the optimal action for the current player on the board.
     """
     legal_actions = actions(board)
-    print(legal_actions)
-    for action in legal_actions:
-        new_board = result(board, action)
-        print(new_board)
-        if winner(new_board) is not None:
+    for action in legal_actions:   
+        # Check whether the computer have win chance or not 
+        newboard = result(board, action)
+        if winner(newboard) == 'X' or winner(newboard) == 'O':
             return action
+    # Check whether the user have win change
+    for action in legal_actions:
+        newboard = copy_board(board)
+        newboard[action[0]][action[1]] = 'O'
+        if winner(newboard) == 'O':
+            return action
+    
     return random.choice(legal_actions)

@@ -20,7 +20,6 @@ moveFont = pygame.font.Font("OpenSans-Regular.ttf", 60)
 user = None
 board = ttt.initial_state()
 ai_turn = False
-click = 1
 
 while True:
 
@@ -119,14 +118,13 @@ while True:
                 ai_turn = True
 
         # Check for a user move
-        # click, _, _ = pygame.mouse.get_pressed()
+        click, _, _ = pygame.mouse.get_pressed()
         if click == 1 and user == player and not game_over:
             mouse = pygame.mouse.get_pos()
             for i in range(3):
                 for j in range(3):
                     if (board[i][j] == ttt.EMPTY and tiles[i][j].collidepoint(mouse)):
                         board = ttt.result(board, (i, j))
-            click = not click
 
         if game_over:
             againButton = pygame.Rect(width / 3, height - 65, width / 3, 50)
